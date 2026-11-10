@@ -4,7 +4,7 @@
 
 Start in a desert camp with a pile of wood and gold. Before long, you’re carrying the Ark across a river and marching around the walls of Jericho. Want a quick challenge? Jump into **Trials** and see if you can get the Ark past a rival company.
 
-**[Play The Arkkeepers](https://zeidal-ruzouq.github.io/arkkeepers/)**
+**[Play The Arkkeepers](https://zeidal-ruzouq.github.io/ARKKeepers/)**
 
 - **Story** — Play through six chapters with Hebrew and English dialogue side by side.
 - **Trials** — Pick a keeper, read the rival’s next move, and decide when to brace or push ahead.
