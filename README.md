@@ -20,7 +20,6 @@ Click or tap to move and interact. You can also use **WASD** or **arrow keys** t
 | [docs/game/](docs/game/) | `game.js` connects the controls and screen. `engine.js` handles movement and chapters. The other files handle dialogue, trials, pixel art, and sound. |
 | [docs/ark/](docs/ark/) | The 3D model and viewer code. The downloadable model is [ark.glb](docs/assets/ark.glb). |
 | [docs/styles/](docs/styles/) | Styles for the game, menus, and touch controls. |
-| [docs/research/](docs/research/) | The story sources and notes behind the game and the model. |
 | [scripts/](scripts/) and [tests/](tests/) | Local preview, asset builders, and checks for the journey, movement, dialogue, trials, and model. |
 
 Run `node scripts/serve.mjs` and open [localhost:4173](http://127.0.0.1:4173) to play locally. Run `node --test` to check the game. No packages to install.
@@ -30,4 +29,4 @@ Run `node scripts/serve.mjs` and open [localhost:4173](http://127.0.0.1:4173) to
 ![Gathering supplies at camp, with dialogue in Hebrew and English](screenshots/gameplay.jpg)
 ![The golden Ark in the 3D viewer](screenshots/ark.jpg)
 
-Class project by Zeid Al Ruzouq, Jackson Hanselman, and Thomas Lapp. [Read the research notes](docs/research/RESEARCH.md).
+Class project by Zeid Al Ruzouq, Jackson Hanselman, and Thomas Lapp.
