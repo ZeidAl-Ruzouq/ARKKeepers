@@ -1,6 +1,6 @@
 import {Journey,CHAPTERS,dist} from './engine.js';
 import {PixelWorld} from './pixels.js';
-import {ArkViewer} from './ark-viewer.js';
+import {ArkViewer} from '../ark/ark-viewer.js';
 import {EncounterView} from './encounters.js';
 import {JourneyAudio} from './sound.js';
 const $=s=>document.querySelector(s),canvas=$('#world'),world=new PixelWorld(canvas),game=new Journey();

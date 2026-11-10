@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {Journey,dist} from './docs/engine.js';
+import {Journey,dist} from '../docs/game/engine.js';
 function settle(g,dt=.04){let frames=0;while(g.path.length&&frames++<6000){g.step(dt);if(g.dialogue.length)break;}assert.ok(frames<6000,'Click path settles without oscillation');}
 const g=new Journey();g.dialogue=[];
 // The old threshold could oscillate around short goals at large frame intervals.

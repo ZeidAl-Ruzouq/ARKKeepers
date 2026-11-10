@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {Journey,dist} from './docs/engine.js';
+import {Journey,dist} from '../docs/game/engine.js';
 const g=new Journey();let finished=false;g.onFinish=()=>finished=true;
 function talk(){for(let guard=0;g.dialogue.length&&guard<30;guard++)g.advance()}
 function object(id){let o=g.objects.find(o=>o.id===id);assert.ok(o,`Object exists: ${id}`);return o}
