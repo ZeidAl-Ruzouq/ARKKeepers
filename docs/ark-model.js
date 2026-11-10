@@ -1,0 +1,37 @@
+// Original procedural model. Cubit ratios follow Exodus 25:10–22;
+// joinery, molding, figure anatomy, thicknesses and pole length are interpretive.
+export const ARK_MATERIALS=[
+ {name:'Gold overlay',color:[.69,.43,.10,1],metallic:1,roughness:.3},
+ {name:'Polished gold',color:[.9,.68,.25,1],metallic:1,roughness:.22},
+ {name:'Acacia core — symbolic',color:[.25,.115,.045,1],metallic:0,roughness:.8},
+ {name:'Stone tablets — symbolic',color:[.57,.57,.50,1],metallic:0,roughness:.85}
+];
+export function createArkModel(){
+ const groups=new Map();let material=0,layer=0;
+ const group=()=>{let k=material+':'+layer;if(!groups.has(k))groups.set(k,{name:ARK_MATERIALS[material].name+(layer===1?' · cover and cherubim':layer===2?' · interior':''),material,layer,positions:[],normals:[]});return groups.get(k)};
+ function tri(a,b,c,na,nb,nc){let g=group();if(!na){let u=b.map((v,i)=>v-a[i]),v=c.map((v,i)=>v-a[i]);let n=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]],m=Math.hypot(...n)||1;na=nb=nc=n.map(x=>x/m)}g.positions.push(...a,...b,...c);g.normals.push(...na,...nb,...nc)}
+ const quad=(a,b,c,d)=>{tri(a,b,c);tri(a,c,d)};
+ function box(x,y,z,w,h,d){let a=[x-w/2,y,z-d/2],b=[x+w/2,y,z-d/2],c=[x+w/2,y+h,z-d/2],e=[x-w/2,y+h,z-d/2],f=[x-w/2,y,z+d/2],g=[x+w/2,y,z+d/2],i=[x+w/2,y+h,z+d/2],j=[x-w/2,y+h,z+d/2];quad(b,a,e,c);quad(f,g,i,j);quad(a,f,j,e);quad(g,b,c,i);quad(e,j,i,c);quad(a,b,g,f)}
+ function beveled(x,y,z,w,h,d,r=.035){let ring=(yy,inset)=>[[-w/2+r+inset,-d/2+inset],[w/2-r-inset,-d/2+inset],[w/2-inset,-d/2+r+inset],[w/2-inset,d/2-r-inset],[w/2-r-inset,d/2-inset],[-w/2+r+inset,d/2-inset],[-w/2+inset,d/2-r-inset],[-w/2+inset,-d/2+r+inset]].map(([a,b])=>[x+a,yy,z+b]);let rings=[ring(y,r*.5),ring(y+r,0),ring(y+h-r,0),ring(y+h,r*.5)];for(let k=0;k<3;k++)for(let t=0;t<8;t++){let u=(t+1)%8;quad(rings[k][t],rings[k][u],rings[k+1][u],rings[k+1][t])}for(let t=1;t<7;t++){tri(rings[0][0],rings[0][t+1],rings[0][t]);tri(rings[3][0],rings[3][t],rings[3][t+1])}}
+ function ellipsoid(x,y,z,rx,ry,rz,segments=16,levels=10){let point=(a,b)=>[x+rx*Math.cos(b)*Math.cos(a),y+ry*Math.sin(b),z+rz*Math.cos(b)*Math.sin(a)];let normal=p=>{let n=[(p[0]-x)/(rx*rx),(p[1]-y)/(ry*ry),(p[2]-z)/(rz*rz)],m=Math.hypot(...n)||1;return n.map(v=>v/m)};for(let j=0;j<levels;j++)for(let i=0;i<segments;i++){let a=i/segments*Math.PI*2,b=(i+1)/segments*Math.PI*2,c=-Math.PI/2+j/levels*Math.PI,d=-Math.PI/2+(j+1)/levels*Math.PI,p=point(a,c),q=point(b,c),r=point(b,d),s=point(a,d);tri(p,q,r,normal(p),normal(q),normal(r));tri(p,r,s,normal(p),normal(r),normal(s))}}
+ function rod(a,b,r,sides=16){let delta=b.map((v,i)=>v-a[i]),m=Math.hypot(...delta);let axis=delta.map(v=>v/m),up=Math.abs(axis[1])>.9?[1,0,0]:[0,1,0];let u=[axis[1]*up[2]-axis[2]*up[1],axis[2]*up[0]-axis[0]*up[2],axis[0]*up[1]-axis[1]*up[0]],um=Math.hypot(...u);u=u.map(v=>v/um);let v=[axis[1]*u[2]-axis[2]*u[1],axis[2]*u[0]-axis[0]*u[2],axis[0]*u[1]-axis[1]*u[0]];let norm=t=>u.map((n,i)=>n*Math.cos(t)+v[i]*Math.sin(t));let pt=(p,t)=>p.map((n,i)=>n+r*norm(t)[i]);for(let i=0;i<sides;i++){let t=i/sides*Math.PI*2,s=(i+1)/sides*Math.PI*2,p=pt(a,t),q=pt(a,s),rr=pt(b,s),ss=pt(b,t),nt=norm(t),ns=norm(s);tri(p,q,rr,nt,ns,ns);tri(p,rr,ss,nt,ns,nt);tri(a,q,p,axis.map(n=>-n),axis.map(n=>-n),axis.map(n=>-n));tri(b,ss,rr,axis,axis,axis)}}
+ function torus(x,y,z,major,minor){const sides=28,tube=10;let pt=(a,b)=>[x+minor*Math.sin(b),y+(major+minor*Math.cos(b))*Math.sin(a),z+(major+minor*Math.cos(b))*Math.cos(a)],normal=(a,b)=>[Math.sin(b),Math.cos(b)*Math.sin(a),Math.cos(b)*Math.cos(a)];for(let i=0;i<sides;i++)for(let j=0;j<tube;j++){let a=i/sides*Math.PI*2,b=(i+1)/sides*Math.PI*2,c=j/tube*Math.PI*2,d=(j+1)/tube*Math.PI*2;tri(pt(a,c),pt(b,c),pt(b,d),normal(a,c),normal(b,c),normal(b,d));tri(pt(a,c),pt(b,d),pt(a,d),normal(a,c),normal(b,d),normal(a,d))}}
+ function feather(a,b,w,depth){let dir=b.map((v,i)=>v-a[i]),len=Math.hypot(dir[0],dir[1]);let u=[-dir[1]/len*w,dir[0]/len*w,0];let p=a.map((v,i)=>v+u[i]),q=a.map((v,i)=>v-u[i]),tip=b;let back=v=>v.map((n,i)=>n+(i===2?depth:0));tri(p,q,tip);tri(back(p),back(tip),back(q));quad(p,tip,back(tip),back(p));quad(q,back(q),back(tip),tip);quad(p,back(p),back(q),q)}
+ // Thin acacia walls are overlaid both inside and outside by the surrounding gold skins.
+ material=2;box(0,.055,0,2.46,.11,1.46);box(0,.16,-.694,2.46,1.28,.07);box(0,.16,.694,2.46,1.28,.07);box(-1.194,.16,0,.07,1.28,1.32);box(1.194,.16,0,.07,1.28,1.32);
+ material=0;beveled(0,.01,0,2.5,.18,1.5,.035);box(0,.18,-.74,2.5,1.27,.02);box(0,.18,.74,2.5,1.27,.02);box(-1.24,.18,0,.02,1.27,1.46);box(1.24,.18,0,.02,1.27,1.46);box(0,.17,0,2.31,.016,1.28);box(0,.18,-.653,2.31,1.25,.012);box(0,.18,.653,2.31,1.25,.012);box(-1.145,.18,0,.012,1.25,1.3);box(1.145,.18,0,.012,1.25,1.3);
+ for(let x of [-1.13,1.13])for(let z of [-.62,.62])beveled(x,-.07,z,.22,.15,.22,.025);
+ // Structural border moldings rather than invented inscriptions or pictorial reliefs.
+ material=1;for(let yy of [.13,1.34,1.43]){for(let z of [-.756,.756])beveled(0,yy,z,2.57,.035,.047,.01);for(let x of [-1.27,1.27])beveled(x,yy,0,.047,.035,1.55,.01)}
+ for(let z of [-.754,.754]){for(let yy of [.31,1.19])rod([-1.06,yy,z],[1.06,yy,z],.009,8);for(let xx of [-1.06,1.06])rod([xx,.31,z],[xx,1.2,z],.009,8)}
+ // Exactly four carrying rings and two poles. Pole length is a modeling convention.
+ for(let x of [-.93,.93])for(let z of [-.86,.86]){material=0;rod([x,.4,z*.85],[x,.4,z],.047,12);material=1;torus(x,.4,z,.115,.028)}
+ material=0;for(let z of [-.86,.86]){rod([-2.45,.4,z],[2.45,.4,z],.055,24);material=1;for(let x of [-2.43,2.43]){rod([x-.04,.4,z],[x+.04,.4,z],.066,20);ellipsoid(x,.4,z,.075,.075,.075,12,8)}material=0;}
+ // The removable gold cover and its two attached, interpretive composite creatures.
+ layer=1;material=1;beveled(0,1.48,0,2.61,.12,1.61,.028);material=0;beveled(0,1.6,0,2.51,.025,1.51,.01);
+ for(let dir of [-1,1]){let x=dir*.91;material=0;ellipsoid(x,1.75,0,.22,.15,.255);for(let zz of [-.15,.15]){rod([x+dir*.1,1.72,zz],[x-dir*.14,1.64,zz],.045,12);ellipsoid(x-dir*.16,1.655,zz,.07,.035,.045,12,6)}ellipsoid(x-dir*.12,1.9,0,.1,.19,.12);material=1;ellipsoid(x-dir*.17,2.055,0,.105,.135,.105);beveled(x-dir*.254,2.01,0,.032,.06,.07,.008);material=0;for(let zz of [-.099,.099])ellipsoid(x-dir*.2,2.085,zz,.015,.014,.009,8,6);rod([x+dir*.15,1.78,.08],[x+dir*.29,1.69,.17],.025,10);
+ for(let side of [-1,1]){let root=[x+dir*.025,1.86,side*.11];for(let k=0;k<15;k++){let t=k/14,tip=[x-dir*(.18+t*.89),2.0+Math.sin(t*1.9)*.72,side*(.17+Math.sin(t*Math.PI)*.31)];material=k%3===0?1:0;feather([root[0]+dir*t*.035,root[1]+t*.035,root[2]],tip,.034+t*.016,.025*side)}material=1;rod(root,[x-dir*.55,2.55,side*.37],.028,10)}}
+ // Symbolic, uninscribed tablets. Their precise appearance is not recoverable.
+ layer=2;material=3;for(let x of [-.35,.35]){beveled(x,.2,0,.6,.09,.82,.055);ellipsoid(x,.25,-.28,.29,.028,.13,20,6)}
+ return {materials:ARK_MATERIALS,meshes:[...groups.values()].map(g=>({...g,positions:new Float32Array(g.positions),normals:new Float32Array(g.normals)})),metadata:{title:'The Ark of the Covenant — interpretive reconstruction',basis:'Exodus 25:10–22; 37:1–9',units:'Chest dimensions use cubit ratios; absolute scale is not established.',license:'Original model created for The Arkkeepers. No third-party model or texture assets.',limitations:'Molding, pole length, figure anatomy, joinery, thicknesses and tablet forms are modern visual choices. Not a scan or a recovered Ark.'}};
+}
